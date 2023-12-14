@@ -10,7 +10,7 @@ from pycocotools.coco import COCO
 
 from ..dataloading import get_yolox_datadir
 from .datasets_wrapper import CacheDataset, cache_read_img
-
+from .session_data import download_image_blob
 
 def remove_useless_info(coco):
     """
@@ -40,7 +40,7 @@ class COCODataset(CacheDataset):
         self,
         data_dir=None,
         json_file="instances_train2017.json",
-        name="train2017",
+        name="data",
         img_size=(416, 416),
         preproc=None,
         cache=False,
@@ -124,8 +124,9 @@ class COCODataset(CacheDataset):
             if "file_name" in im_ann
             else "{:012}".format(id_) + ".jpg"
         )
+        img_url = im_ann["url"]
 
-        return (res, img_info, resized_info, file_name)
+        return (res, img_info, resized_info, file_name, img_url)
 
     def load_anno(self, index):
         return self.annotations[index][0]
@@ -142,9 +143,17 @@ class COCODataset(CacheDataset):
 
     def load_image(self, index):
         file_name = self.annotations[index][3]
+        blob_path = self.annotations[index][4]
+        blob_path = blob_path.split('?skoid=')[0]
 
         img_file = os.path.join(self.data_dir, self.name, file_name)
-
+        """
+        img = (
+            download_image_blob(blob_path)
+            if "http" in blob_path and "blob" in blob_path
+            else cv2.imread(blob_path)
+        )
+        """
         img = cv2.imread(img_file)
         assert img is not None, f"file named {img_file} not found"
 
@@ -156,7 +165,7 @@ class COCODataset(CacheDataset):
 
     def pull_item(self, index):
         id_ = self.ids[index]
-        label, origin_image_size, _, _ = self.annotations[index]
+        label, origin_image_size, _, _, _ = self.annotations[index]
         img = self.read_img(index)
 
         return img, copy.deepcopy(label), origin_image_size, np.array([id_])
