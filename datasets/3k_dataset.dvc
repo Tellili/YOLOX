@@ -1,0 +1,5 @@
+outs:
+- md5: c6625d27bcf615c863e2cc6adb3b48d5.dir
+  size: 32971022016
+  nfiles: 3486
+  path: 3k_dataset

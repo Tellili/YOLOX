@@ -1,7 +1,7 @@
 TRAIN_CMD = python tools/train.py \
-	-f exps/example/custom/yolox_s.py \
+	-f exps/example/custom/yolox_m.py \
 	-b 8 --fp16 \
-	-o -c /data/haythem/openml/YOLOX/weights/yolox_s.pth
+	-o -c /data/haythem/openml/YOLOX/weights/yolox_m.pth
 
 EXPORT_ONNX_CMD = python3 tools/export_onnx.py \
 	--output-name /data/haythem/openml/YOLOX/YOLOX_outputs/yolox_sv1/yolox_s.onnx \
